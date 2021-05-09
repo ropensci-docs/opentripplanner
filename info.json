@@ -1,0 +1,12 @@
+{
+  "commit": {
+    "commit": "2af4df35f792772e5e4d4b82ac16220d4d7dd45f",
+    "author": "Malcolm Morgan <mem48@users.noreply.github.com>",
+    "time": "2021-05-09 21:17:25",
+    "files": 3,
+    "merge": false,
+    "message": "document\n"
+  },
+  "remote": "https://github.com/ropensci/opentripplanner",
+  "pkg": "opentripplanner"
+}
