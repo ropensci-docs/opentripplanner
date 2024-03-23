@@ -1,0 +1,12 @@
+{
+  "commit": {
+    "commit": "6959040aabd802fbc473aaf8405058dcd6a2999e",
+    "author": "Malcolm Morgan <mem48@users.noreply.github.com>",
+    "time": "2023-10-25 13:48:51",
+    "files": 2,
+    "merge": false,
+    "message": "Fix bug with new surface lists\n"
+  },
+  "repo": "https://github.com/ropensci/opentripplanner",
+  "pkg": "opentripplanner"
+}
