@@ -1,0 +1,189 @@
+# Get get a route or routes from the OTP
+
+This is the main routing function for OTP and can find single or
+multiple routes between \`fromPlace\` and \`toPlace\`.
+
+## Usage
+
+``` r
+otp_plan(
+  otpcon = NA,
+  fromPlace = NA,
+  toPlace = NA,
+  fromID = NULL,
+  toID = NULL,
+  mode = "CAR",
+  date_time = Sys.time(),
+  arriveBy = FALSE,
+  maxWalkDistance = 1000,
+  numItineraries = 3,
+  routeOptions = NULL,
+  full_elevation = FALSE,
+  get_geometry = TRUE,
+  ncores = max(round(parallel::detectCores() * 1.25) - 1, 1),
+  timezone = otpcon$timezone,
+  distance_balance = FALSE,
+  get_elevation = FALSE
+)
+```
+
+## Arguments
+
+- otpcon:
+
+  OTP connection object produced by otp_connect()
+
+- fromPlace:
+
+  Numeric vector, Longitude/Latitude pair, e.g.
+  \`c(-0.134649,51.529258)\`, or 2 column matrix of Longitude/Latitude
+  pairs, or sf data frame of POINTS with CRS 4326
+
+- toPlace:
+
+  Numeric vector, Longitude/Latitude pair, e.g.
+  \`c(-0.088780,51.506383)\`, or 2 column matrix of Longitude/Latitude
+  pairs, or sf data frame of POINTS with CRS 4326
+
+- fromID:
+
+  character vector same length as fromPlace
+
+- toID:
+
+  character vector same length as toPlace
+
+- mode:
+
+  character vector of one or more modes of travel valid values
+  "TRANSIT","BUS", "RAIL", "SUBWAY","TRAM", "FERRY", "GONDOLA",
+  "FUNICULAR", "AIRPLANE", "CABLE_CAR", "WALK", "BICYCLE",
+  "BICYCLE_RENT", "BICYCLE_PARK", "CAR", "CAR_PARK", "CAR_HAIL",
+  "CARPOOL", "CAR_DROPOFF", "CAR_PICKUP", default "CAR". Not all
+  combinations are valid e.g. c("WALK","BUS") is valid but
+  c("WALK","CAR") is not.
+
+- date_time:
+
+  POSIXct, a date and time, defaults to current date and time
+
+- arriveBy:
+
+  Logical, Whether the trip should depart or arrive at the specified
+  date and time, default FALSE
+
+- maxWalkDistance:
+
+  Numeric passed to OTP in meters
+
+- numItineraries:
+
+  The maximum number of possible itineraries to return
+
+- routeOptions:
+
+  Named list of values passed to OTP use \`otp_route_options()\` to make
+  template object.
+
+- full_elevation:
+
+  Logical, should the full elevation profile be returned, default FALSE
+
+- get_geometry:
+
+  Logical, should the route geometry be returned, default TRUE, see
+  details
+
+- ncores:
+
+  Numeric, number of cores to use when batch processing, default 1, see
+  details
+
+- timezone:
+
+  Character, what timezone to use, see as.POSIXct, default is local
+  timezone
+
+- distance_balance:
+
+  Logical, use distance balancing, default false, see details
+
+- get_elevation:
+
+  Logical, default FALSE, if true XYZ coordinates returned else XY
+  coordinates returned.
+
+## Value
+
+Returns an SF data frame of LINESTRINGs
+
+## Details
+
+This function returns a SF data.frame with one row for each leg of the
+journey (a leg is defined by a change in mode). For transit, more than
+one route option may be returned and is indicated by the
+\`route_option\` column. The number of different itineraries can be set
+with the \`numItineraries\` variable.
+
+\## Batch Routing
+
+When passing a matrix or SF data frame object to fromPlace and toPlace
+\`otp_plan\` will route in batch mode. In this case the \`ncores\`
+variable will be used. Increasing \`ncores\` will enable multicore
+routing, the max \`ncores\` should be 1.25 times the number of cores on
+your system. The default is 1.25 timees -1 for improved stability.
+
+\## Distance Balancing
+
+When using multicore routing each task does not take the same amount of
+time. This can result in wasted time between batches. Distance Balancing
+sorts the routing by the euclidean distance between fromPlace and
+toPlace before routing. This offers a small performance improvement of
+around five percent. As the original order of the inputs is lost fromID
+and toID must be provided.
+
+\## Elevation
+
+OTP supports elevation data and can return the elevation profile of the
+route if available. OTP returns the elevation profile separately from
+the XY coordinates, this means there is not direct match between the
+number of XY points and the number of Z points. OTP also only returns
+the elevation profile for the first leg of the route (this appears to be
+a bug). If \`get_elevation\` is TRUE the otp_plan function matches the
+elevation profile to the XY coordinates to return an SF linestring with
+XYZ coordinates. If you require a more detailed elevation profile, the
+full_elevation parameter will return a nested data.frame with three
+columns. first and second are returned from OTP, while distance is the
+cumulative distance along the route and is derived from First.
+
+\## Route Geometry
+
+The \`get_geometry\` provides the option to not return the route
+geometry, and just return the meta-data (e.g. journey time). This may be
+useful when creating an Origin:Destination matrix and also provides a
+small performance boost by reduced processing of geometries.
+
+## See also
+
+Other routing:
+[`otp_geocode()`](https://docs.ropensci.org/opentripplanner/reference/otp_geocode.md),
+[`otp_isochrone()`](https://docs.ropensci.org/opentripplanner/reference/otp_isochrone.md),
+[`otp_pointset()`](https://docs.ropensci.org/opentripplanner/reference/otp_pointset.md),
+[`otp_routing_options()`](https://docs.ropensci.org/opentripplanner/reference/otp_routing_options.md),
+[`otp_validate_routing_options()`](https://docs.ropensci.org/opentripplanner/reference/otp_validate_routing_options.md)
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+otpcon <- otp_connect()
+otp_plan(otpcon, c(0.1, 55.3), c(0.6, 52.1))
+otp_plan(otpcon, c(0.1, 55.3), c(0.6, 52.1),
+  mode = c("WALK", "TRANSIT")
+)
+otp_plan(otpcon, c(0.1, 55.3), c(0.6, 52.1),
+  mode = "BICYCLE", arriveBy = TRUE,
+  date_time = as.POSIXct(strptime("2018-06-03 13:30", "%Y-%m-%d %H:%M"))
+)
+} # }
+```

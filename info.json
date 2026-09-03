@@ -1,0 +1,13 @@
+{
+  "commit": {
+    "commit": "b4baf039839c9e939121bac7d7f83ff4e79408eb",
+    "author": "Malcolm Morgan <mem48@users.noreply.github.com>",
+    "time": "2024-12-21T10:53:21Z",
+    "files": 2,
+    "merge": true,
+    "message": "Merge branch 'master' of https://github.com/ropensci/opentripplanner\n"
+  },
+  "repo": "https://github.com/ropensci/opentripplanner",
+  "pkg": "opentripplanner",
+  "time": "2026-09-03T09:51:25Z"
+}

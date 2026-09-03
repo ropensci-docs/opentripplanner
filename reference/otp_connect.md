@@ -1,0 +1,97 @@
+# Set up and confirm a connection to an OTP instance.
+
+Defines the parameters required to connect to a router on an OTP
+instance and, if required, confirms that the instance and router are
+query-able.
+
+## Usage
+
+``` r
+otp_connect(
+  hostname = "localhost",
+  router = "default",
+  url = NULL,
+  port = 8080,
+  ssl = FALSE,
+  check = TRUE,
+  timezone = Sys.timezone(),
+  otp_version = 1.5
+)
+```
+
+## Arguments
+
+- hostname:
+
+  A string, e.g. "ec2-34-217-73-26.us-west-2.compute.amazonaws.com".
+  Optional, default is "localhost".
+
+- router:
+
+  A string, e.g. "UK2018". Optional, default is "default". OTP can
+  support multiple routers see advanced vignette for details.
+
+- url:
+
+  If a non-standard URL structure is used provide a full url, default is
+  NULL
+
+- port:
+
+  A positive integer. Optional, default is 8080.
+
+- ssl:
+
+  Logical, indicates whether to use https. Optional, default is FALSE.
+
+- check:
+
+  Logical. If TRUE connection object is only returned if OTP instance
+  and router are confirmed reachable. Optional, default is TRUE.
+
+- timezone:
+
+  Character, timezone, defaults to local timezone
+
+- otp_version:
+
+  Numeric, OTP Version in use default 1.5, if check is TRUE then
+  \`otp_check_version()\` is called and otp_version is updated
+
+## Value
+
+Returns an S3 object of class otpconnect. If `check` is TRUE and the
+router is not reachable the object is not returned.
+
+## Details
+
+The default URL structure for the OTP API is:
+http://\<hostname\>:\<port\>/otp/routers/\<router\> For example:
+http://localhost:8080/otp/routers/default
+
+Functions construct the URL from the parameters provided in otpconnect
+objects. However some websites hosting OTP have modified the default URL
+structure. If this is the case you can use the `url` parameter to bypass
+the URL construction and provide a fully formed URL. In this case the
+`hostname`, `router`, `port`, and `ssl` are ignored.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+otpcon <- otp_connect()
+otpcon <- otp_connect(
+  router = "UK2018",
+  ssl = TRUE
+)
+otpcon <- otp_connect(
+  hostname = "ec2.us-west-2.compute.amazonaws.com",
+  router = "UK2018",
+  port = 8888,
+  ssl = TRUE
+)
+otpcon <- otp_connect(
+  url = "https://api.digitransit.fi:443/routing/v1/routers/hsl"
+)
+} # }
+```

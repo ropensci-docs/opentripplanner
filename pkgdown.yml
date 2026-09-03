@@ -1,0 +1,14 @@
+pandoc: 3.8.3
+pkgdown: 2.2.1
+pkgdown_sha: ~
+articles:
+  advanced_features: advanced_features.html
+  Analyst: Analyst.html
+  known_issues: known_issues.html
+  opentripplanner: opentripplanner.html
+  OTPv2: OTPv2.html
+  prerequisites: prerequisites.html
+last_built: 2026-09-03T09:50Z
+urls:
+  reference: https://docs.ropensci.org/opentripplanner/reference
+  article: https://docs.ropensci.org/opentripplanner/articles
